@@ -1,12 +1,8 @@
-﻿using Microsoft.Owin;
+﻿using ExpenseTracker.API;
+using Microsoft.Owin;
 using Owin;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
-
-[assembly: OwinStartup(typeof(ExpenseTracker.API.Startup))]
+[assembly: OwinStartup(typeof(Startup))]
 
 namespace ExpenseTracker.API
 {
@@ -14,8 +10,7 @@ namespace ExpenseTracker.API
     {
         public void Configuration(IAppBuilder app)
         {
-            app.UseWebApi(WebApiConfig.Register()); 
-             
+            app.UseWebApi(WebApiConfig.Register());
         }
     }
 }

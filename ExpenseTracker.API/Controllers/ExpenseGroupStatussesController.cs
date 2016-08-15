@@ -1,22 +1,20 @@
 ﻿using ExpenseTracker.Repository;
 using ExpenseTracker.Repository.Factories;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Http;
 
 namespace ExpenseTracker.API.Controllers
 {
-  //  [RoutePrefix("api/expensegroupstatusses")]
+    //  [RoutePrefix("api/expensegroupstatusses")]
     public class ExpenseGroupStatussesController : ApiController
     {
-        IExpenseTrackerRepository _repository;
-        ExpenseMasterDataFactory _expenseMasterDataFactory = new ExpenseMasterDataFactory();
+        readonly IExpenseTrackerRepository _repository;
+        readonly ExpenseMasterDataFactory _expenseMasterDataFactory = new ExpenseMasterDataFactory();
 
         public ExpenseGroupStatussesController()
         {
-            _repository = new ExpenseTrackerEFRepository(new Repository.Entities.ExpenseTrackerContext());
+            _repository = new ExpenseTrackerEfRepository(new Repository.Entities.ExpenseTrackerContext());
         }
 
         public ExpenseGroupStatussesController(IExpenseTrackerRepository repository)
@@ -24,7 +22,7 @@ namespace ExpenseTracker.API.Controllers
             _repository = repository;
         }
 
-         
+
         public IHttpActionResult Get()
         {
 

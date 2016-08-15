@@ -1,21 +1,9 @@
 ﻿using ExpenseTracker.Repository.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ExpenseTracker.Repository.Factories
 {
     public class ExpenseMasterDataFactory
     {
-        public ExpenseMasterDataFactory()
-        {
-
-        }
-
-
-
         public ExpenseGroupStatus CreateExpenseGroupStatus(DTO.ExpenseGroupStatus expenseGroupStatus)
         {
             return new ExpenseGroupStatus()

@@ -1,15 +1,11 @@
 ﻿using ExpenseTracker.Repository.Entities;
 using System;
-using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ExpenseTracker.Repository
 {
-    public class ExpenseTrackerEFRepository : ExpenseTracker.Repository.IExpenseTrackerRepository
+    public class ExpenseTrackerEfRepository : IExpenseTrackerRepository
     {
 
         // TODO: in a later stage, everything must be user-specific, eg: the
@@ -17,9 +13,9 @@ namespace ExpenseTracker.Repository
         // this allows us to show what can go wrong if you don't include the
         // user check.
 
-        ExpenseTrackerContext _ctx;
+        readonly ExpenseTrackerContext _ctx;
 
-        public ExpenseTrackerEFRepository(ExpenseTrackerContext ctx)
+        public ExpenseTrackerEfRepository(ExpenseTrackerContext ctx)
         {
             _ctx = ctx;
             
@@ -174,9 +170,9 @@ namespace ExpenseTracker.Repository
 
                     // you can only update when an expensegroup already exists for this id
 
-                    var existingEG = _ctx.ExpenseGroups.FirstOrDefault(exg => exg.Id == eg.Id);
+                    var existingEg = _ctx.ExpenseGroups.FirstOrDefault(exg => exg.Id == eg.Id);
 
-                    if (existingEG == null)
+                    if (existingEg == null)
                     {
                         return new RepositoryActionResult<ExpenseGroup>(eg, RepositoryActionStatus.NotFound);
                     }
@@ -185,7 +181,7 @@ namespace ExpenseTracker.Repository
                     // as the entity is already in the dbSet
 
                     // set original entity state to detached
-                    _ctx.Entry(existingEG).State = EntityState.Detached;
+                    _ctx.Entry(existingEg).State = EntityState.Detached;
                     
                     // attach & save
                     _ctx.ExpenseGroups.Attach(eg);
