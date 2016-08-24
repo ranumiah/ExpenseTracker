@@ -41,6 +41,13 @@ namespace ExpenseTracker.API
             json.SerializerSettings.Formatting = Formatting.Indented;
             json.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
+
+            // configure caching
+            // This will create an ETag on indivisual resource.
+            // If the header has below then it will not create another resource but use the caching one
+            // If-None-Match: "f18b36d3af37405bb42b687010db3f73"
+            config.MessageHandlers.Add(new CacheCow.Server.CachingHandler(config));
+
             return config;
         }
     }

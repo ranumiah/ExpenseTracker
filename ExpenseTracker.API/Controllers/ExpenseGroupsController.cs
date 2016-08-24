@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -33,10 +34,20 @@ namespace ExpenseTracker.API.Controllers
 
         [Route("api/expensegroups", Name = "ExpenseGroupsList")]
         public IHttpActionResult Get(string sort = "id", string status = null, string userId = null,
-            int page = 1, int pageSize = MaxPageSize)
+            string fields = null, int page = 1, int pageSize = MaxPageSize)
         {
             try
             {
+                bool includeExpenses = false;
+                List<string> lstOfFields = new List<string>();
+
+                // we should include expenses when the fields-string contains "expenses", or "expenses.id", …
+                if (fields != null)
+                {
+                    lstOfFields = fields.ToLower().Split(',').ToList();
+                    includeExpenses = lstOfFields.Any(f => f.Contains("expenses"));
+                }
+
                 int statusId = -1;
                 if (status != null)
                 {
@@ -54,9 +65,12 @@ namespace ExpenseTracker.API.Controllers
                     }
                 }
 
-
                 // get expensegroups from repository
-                IQueryable<Repository.Entities.ExpenseGroup> expenseGroups = _repository.GetExpenseGroups()
+                IQueryable<Repository.Entities.ExpenseGroup> expenseGroups = null;
+                expenseGroups = includeExpenses ? _repository.GetExpenseGroupsWithExpenses() : _repository.GetExpenseGroups();
+
+
+                expenseGroups = expenseGroups
                     .ApplySort(sort)
                     .Where(eg => statusId == -1 || eg.ExpenseGroupStatusId == statusId)
                     .Where(eg => userId == null || eg.UserId == userId);
@@ -79,8 +93,8 @@ namespace ExpenseTracker.API.Controllers
                         {
                             page = page - 1,
                             pageSize,
-                            sort
-                            ,
+                            sort,
+                            fields,
                             status,
                             userId
                         })
@@ -91,8 +105,8 @@ namespace ExpenseTracker.API.Controllers
                         {
                             page = page + 1,
                             pageSize,
-                            sort
-                            ,
+                            sort,
+                            fields,
                             status,
                             userId
                         })
@@ -118,7 +132,7 @@ namespace ExpenseTracker.API.Controllers
                     .Skip(pageSize*(page - 1))
                     .Take(pageSize)
                     .ToList()
-                    .Select(eg => _expenseGroupFactory.CreateExpenseGroup(eg)));
+                    .Select(eg => _expenseGroupFactory.CreateDataShapedObject(eg, lstOfFields)));
             }
             catch (Exception)
             {
@@ -145,15 +159,41 @@ namespace ExpenseTracker.API.Controllers
         }
 
         [HttpGet]
-        public IHttpActionResult Get()
+        public IHttpActionResult Get(int id, string fields = null)
         {
             try
             {
-                var expenseGroups = _repository.GetExpenseGroups().ToList();
+                bool includeExpenses = false;
+                List<string> lstOfFields = new List<string>();
 
-                return Ok(expenseGroups.ToList()
-                    .Select(eg => _expenseGroupFactory.CreateExpenseGroup(eg)));
+                // we should include expenses when the fields-string contains "expenses"
+                if (fields != null)
+                {
+                    lstOfFields = fields.ToLower().Split(',').ToList();
+                    includeExpenses = lstOfFields.Any(f => f.Contains("expenses"));
+                }
 
+
+                Repository.Entities.ExpenseGroup expenseGroup;
+                if (includeExpenses)
+                {
+                    expenseGroup = _repository.GetExpenseGroupWithExpenses(id);
+                }
+                else
+                {
+                    expenseGroup = _repository.GetExpenseGroup(id);
+
+                }
+
+
+                if (expenseGroup != null)
+                {
+                    return Ok(_expenseGroupFactory.CreateDataShapedObject(expenseGroup, lstOfFields));
+                }
+                else
+                {
+                    return NotFound();
+                }
             }
             catch (Exception)
             {
