@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using System.Web.Http.Routing;
 using ExpenseTracker.API.Helpers;
 using ExpenseTracker.Repository;
@@ -15,6 +16,7 @@ using ExpenseGroup = ExpenseTracker.DTO.ExpenseGroup;
 
 namespace ExpenseTracker.API.Controllers
 {
+    [EnableCors("*", "*", "GET,POST")]
     public class ExpenseGroupsController : ApiController
     {
         private const int MaxPageSize = 10;
