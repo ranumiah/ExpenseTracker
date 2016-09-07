@@ -16,6 +16,7 @@ using ExpenseGroup = ExpenseTracker.DTO.ExpenseGroup;
 
 namespace ExpenseTracker.API.Controllers
 {
+    // This enables Cross-Origin Resource Sharing
     [EnableCors("*", "*", "GET,POST")]
     public class ExpenseGroupsController : ApiController
     {
@@ -135,24 +136,6 @@ namespace ExpenseTracker.API.Controllers
                     .Take(pageSize)
                     .ToList()
                     .Select(eg => _expenseGroupFactory.CreateDataShapedObject(eg, lstOfFields)));
-            }
-            catch (Exception)
-            {
-                return InternalServerError();
-            }
-        }
-
-        public IHttpActionResult Get(int id)
-        {
-            try
-            {
-                Repository.Entities.ExpenseGroup expenseGroup = _repository.GetExpenseGroup(id);
-
-                if (expenseGroup != null)
-                {
-                    return Ok(_expenseGroupFactory.CreateExpenseGroup(expenseGroup));
-                }
-                return NotFound();
             }
             catch (Exception)
             {
